@@ -1,0 +1,56 @@
+section .data
+    number db 7;
+    divisor db 2;
+    answer db 1;
+     msg_one db 'The number is prime', 0xA;
+     msg_not_one db 'The number is not prime', 0xA;
+section .text
+global _start
+
+_start:
+    mov al, [number]  ;
+    mov bl, [divisor];
+check_prime:
+    ;Divide the number by divisor
+        div ebx;
+    ;Check if the remainder is 0 (Then its not prime);
+        cmp edx, 0  ;
+        je not_prime;
+    ;Increment
+        inc ebx;
+    ; Reset registers
+        mov al, [number];
+        mov edx, 0;
+    ;Test if it reached to the end(Which means it a prime)
+        cmp eax, ebx;
+        je print_prime;
+    ;Re-start the loop
+        jmp check_prime;
+ 
+not_prime:
+    mov dword [answer], 0;
+
+check_answer:
+    ;Check if the number is prime
+    cmp dword [answer], 1;
+    je print_prime;
+    ;Continue if not prime
+    mov edx, 23;
+    mov ecx, msg_not_one;
+    mov ebx, 1  ;
+    mov eax, 4  ;
+    int 0x80    ;
+    jmp end_program;
+ 
+print_prime:
+    mov edx, 19;
+    mov ecx, msg_one;
+    mov ebx, 1  ; 
+    mov eax, 4  ; 
+    int 0x80    ;
+    jmp end_program;
+
+end_program:
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
